@@ -1,3 +1,4 @@
+%程序名：用MATLAB求解含有初始状态的系统输出
 clear;
 close all;
 
@@ -5,12 +6,12 @@ close all;
 a0=1;
 a1=-0.7;
 b0=1.5;
-%系统初始条件
+%系统初始条件y(-1)=1
 ys=1;
 
 xn=[1,zeros(1,30)];
 B=b0;
-A=[a0,a1];
+A=[a0,a1];%差分方程系数
 xi=filtic(B,A,ys);%xi是等效初始条件的输入序列
 yn=filter(B,A,xn,xi);%求解系统输出y(n)
  
