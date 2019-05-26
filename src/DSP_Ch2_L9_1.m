@@ -5,7 +5,7 @@
 
 clear;%清除内存
 close all;%关闭所有图形
-filename1='canon.wav';
+filename1='../resource/canon.wav';
 [s1,fs]=audioread(filename1);%读取音乐信号，采样频率为fs
 fs=fs/1000;%采样频率单位为kHz
 s=s1';
@@ -19,7 +19,7 @@ figure;plot((-2048:2047)*fs/4096,xf1);grid on;
 ylabel('实信号频谱','fontsize',12);xlabel('kHz','fontsize',14);%标注xy轴坐标
 title('实信号幅频特性','fontsize',14); xlim([-16 16]);
 
-y=x.*cos(2*pi*8/32*(0:4095));%DSB调制
+y=x.*cos(2*pi*8/fs*(0:4095));%DSB调制
 
 %y=x.*exp(2*1i*pi*6/32*(0:4095));%频谱搬移
 yf=20*log10(abs(fft(y,4096)));%求复信号的频谱
