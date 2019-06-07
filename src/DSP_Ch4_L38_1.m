@@ -5,7 +5,7 @@
 % 这种变换也称做调频Z变换-Chirp-Z变换或CZT，它是适用于更一般情况由x(n)求X(zk)的快速算法。
 % 三、案例描述：某一低通滤波器的零、极点分布如图所示，利用Chirp-Z变换观察滤波器零点特性。（极点半径1.2）
 
-%close all;
+close all;
 clear;
 
 fs=2000; 
@@ -31,7 +31,7 @@ f2=700;
 f1=50;
 M=201;
 W=exp(-1i*2*pi*(f2-f1)/(M*fs)); 
-A=1.19*exp(1i*2*pi*f1/fs); 
+A=1.20*exp(1i*2*pi*f1/fs); 
 yzz=czt(hn,M,W,A); 
 
 subplot(1,2,1);
