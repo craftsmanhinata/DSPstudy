@@ -1,0 +1,57 @@
+%本程序用于分析IIR滤波器直接型、级联型结构系数量化后的零极点变化和对幅频特性的影响。
+
+clc;
+clear;
+close all;
+
+%当量化方式采用截尾量化时，程序如下：
+qq=5;%量化位数qq+1 
+w=0:0.001*pi:pi;
+b=[0.1157 0.271 0.2710 0.1157];
+a=[1 -0.7421 0.7211 -0.2057]; 
+bqr=intbT(b,qq);%滤波器系数截尾量化为qq+1位
+aqr=intbT(a,qq);
+[hr1,w]=freqz(bqr,aqr,w);
+hr=20*log10(abs(hr1)/max(abs(hr1)));      %求量化后滤波器的频率响应，幅度归一
+[sos,g]=tf2sos(b,a);                  %求滤波器级联子系统的系统函数
+b1=sos(1,1:3);a1=sos(1,4:6);
+b2=sos(2,1:3);a2=sos(2,4:6); 
+bqr1=intbT(b1,qq);                                    %量化子系统系数
+aqr1=intbT(a1,qq); 
+[h1,w]=freqz(bqr1,aqr1,w);                        %求量化后子系统的频率响应
+bqr2=intbT(b2,qq);
+aqr2=intbT(a2,qq);
+[h2,w]=freqz(bqr2,aqr2,w);
+hhh=h1.*h2;
+hhh=20*log10(abs(hhh)/max(abs(hhh)));    %级联子系统系数量化后的频率响应，幅度归一
+[zr,pr,kr]=tf2zp(bqr,aqr);%求直接型系数量化后的系统零极点
+sosqr=[bqr1 aqr1;bqr2 aqr2];
+[zqrs,pqrs,kqrs]  =  sos2zp(sosqr);                %求级联型系数量化后的系统零极点
+
+%子函数
+% br=intbR(d,b)将十进制数d利用舍入法得到b(不包括符号位)位的二进制数，然后将该二进制数再转换为十进制数br
+function  br=intbR(d,b)
+    m=1;
+    dr1=abs(d);
+    while fix(dr1)>0
+        dr1=abs(d)/(2^m);
+        m=m+1;
+    end
+    br=fix(dr1*2^b+.5);
+    br=sign(d).*br.*2^(m-b-1); 
+end
+
+% bt = intbT(d,b) 将十进制数d利用截尾法得到b(不包括符号位)位的二进制数，然后将该二进制数再转换为十进制数bt
+function bt= intbT(d,b)     
+    m=1; 
+    dt1=abs(d); 
+    while fix(dt1)>0 
+        dt1=abs(d)/(2^m); 
+        m=m+1; 
+    end
+    bt=fix(dt1*2^b); 
+    bt=sign(d).*bt.*2^(m-b-1);
+end
+
+%从结果可以看出，对于一个数字滤波器来讲，当用一个有限字长系统实现时，在一定字长条件下，
+%系统的实现结构直接决定系统特性的改变。高阶直接型对量化效应最为敏感，为减小量化效应，应通过低阶级联或并联实现之。
